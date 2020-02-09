@@ -33,16 +33,16 @@ class WheelScaler(Node):
         self.get_logger().info("wheel_scaler started")
 
         self.scale = self.declare_parameter('distance_scale', 1).value
-        self.get_logger().info("wheel_scaler scale: %0.2f", self.scale)
+        self.get_logger().info("wheel_scaler scale: %0.2f" % self.scale)
 
-        rclpy.create_subscriber(Int16, "lwheel", self.lwheelCallback)
-        rclpy.create_subscriber(Int16, "rwheel", self.rwheelCallback)
+        self.create_subscription(Int16, "lwheel", self.lwheel_callback, 10)
+        self.create_subscription(Int16, "rwheel", self.rwheel_callback, 10)
 
-        self.lscaled_pub = rclpy.create_publisher("lwheel_scaled", Int16, queue_size=10)
-        self.rscaled_pub = rclpy.create_publisher("rwheel_scaled", Int16, queue_size=10)
+        self.lscaled_pub = self.create_publisher(Int16, "lwheel_scaled", 10)
+        self.rscaled_pub = self.create_publisher(Int16, "rwheel_scaled", 10)
 
         ### testing sleep CPU usage
-        r = rclpy.Rate(50)
+        r = self.create_rate(50)
         while rclpy.ok():
             r.sleep()
 
@@ -59,11 +59,11 @@ def main(args=None):
     rclpy.init(args=args)
 
     try:
-        scale_wheel = WheelScaler()
+        wheel_scaler = WheelScaler()
     except rclpy.exceptions.ROSInterruptException:
         pass
 
-    scale_wheel.destroy_node()
+    wheel_scaler.destroy_node()
     rclpy.shutdown()
 
 

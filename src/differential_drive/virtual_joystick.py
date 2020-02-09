@@ -24,28 +24,35 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 import inspect
 
-from PySide import QtGui, QtCore
+from PyQt5 import QtWidgets, QtCore
 
 
-class MainWindow(QtGui.QMainWindow, Node):
-    def __init__(self):
-        super().__init__("virtual_joystick")
-        self.get_logger().info('virtual_joystick started')
+class NodeMixin(Node):
+    def __init__(self, parent=None):
+        super(NodeMixin, self).__init__('virtual_joystick')
+
+
+class MainWindow(NodeMixin, QtWidgets.QMainWindow):
+    def __init__(self, *args, **kwargs):
+        super(MainWindow, self).__init__(*args, **kwargs)
+        super(QtWidgets.QMainWindow, self).__init__(*args, **kwargs)
+
+        self.get_logger().info("virtual_joystick")
 
         self.x_min = self.declare_parameter("x_min", -0.20).value
         self.x_max = self.declare_parameter("x_max", 0.20).value
         self.r_min = self.declare_parameter("r_min", -1.0).value
         self.r_max = self.declare_parameter("r_max", 1.0).value
 
-        self.timer_rate = self.declare_parameter('publish_rate', 50)
-        self.pub_twist = self.create_publisher(Twist, 'twist', 10)
+        self.timer_rate = self.declare_parameter('publish_rate', 50).value
+        self.twist_publisher = self.create_publisher(Twist, 'twist', 10)
 
         self.init_ui()
 
     def init_ui(self):
         img_path = os.path.dirname(
-            os.path.abspath(inspect.getfile(inspect.currentframe()))) + "/../images/crosshair.jpg"
-        self.get_logger().info("initUI img_path: %s" % img_path)
+            os.path.abspath(inspect.getfile(inspect.currentframe()))) + "/../../images/crosshair.jpg"
+        self.get_logger().info("init_ui img_path: %s" % img_path)
 
         self.statusBar()
 
@@ -80,18 +87,18 @@ class MainWindow(QtGui.QMainWindow, Node):
 
         self.statusBar().showMessage('point (%0.2f, %0.2f)' % (self.x, self.y))
 
-    def timer_event(self, event):
+    def timerEvent(self, event):
         # self.statusBar().showMessage("timer tick")
-        self.pubTwist()
+        self.pub_twist()
 
     def pub_twist(self):
-        # rospy.loginfo("publishing twist from (%0.3f,%0.3f)" %(self.x,self.y))
+        self.get_logger().info("publishing twist from (%0.3f,%0.3f)" % (self.x, self.y))
         self.twist = Twist()
         self.twist.linear.x = (1 - self.y) * (self.x_max - self.x_min) + self.x_min
-        self.twist.linear.y = 0
-        self.twist.linear.z = 0
-        self.twist.angular.x = 0
-        self.twist.angular.y = 0
+        self.twist.linear.y = 0.0
+        self.twist.linear.z = 0.0
+        self.twist.angular.x = 0.0
+        self.twist.angular.y = 0.0
         self.twist.angular.z = (1 - self.x) * (self.r_max - self.r_min) + self.r_min
 
         if self.twist.linear.x > self.x_max:
@@ -103,15 +110,16 @@ class MainWindow(QtGui.QMainWindow, Node):
         if self.twist.angular.z < self.r_min:
             self.twist.angular.z = self.r_min
 
-        self.pub_twist.publish(self.twist)
+        self.twist_publisher.publish(self.twist)
 
 
 def main(args=None):
     try:
         rclpy.init(args=args)
 
-        app = QtGui.QApplication(sys.argv)
+        app = QtWidgets.QApplication(sys.argv)
         ex = MainWindow()
+        ex.show()
         sys.exit(app.exec_())
 
     except rclpy.exceptions.ROSInterruptException:

@@ -1,6 +1,6 @@
-# differential-drive
+# Differential drive
 
-This is the `differential_drive` ROS package written by Jon Stephan.
+This is the `differential_drive` ROS2 version of the package written by Jon Stephan.
 The originally published version of the package was released on
 Google Code. When Google Code was archived, a copy was pulled into
 GitHub.
@@ -9,6 +9,9 @@ The original package was written for ROS Groovy. In 2015 Mark Rose
 made minor source changes to update the package for ROS Hydro and above,
 moving to catkin, removing code warnings,
 and changing the package layout to match current ROS guidelines.
+
+2020 Andreas Klintberg update all of it to ROS2 and changed the layout to fit the new Python ROS2 guidelines.
+
 
 ROS package page::
 http://wiki.ros.org/differential_drive
@@ -53,6 +56,10 @@ Please refer to the ROS Wiki page for this package for API information:
 http://wiki.ros.org/differential_drive.
 
 ## License
+Unfortunately since the original repo that this was based on is GPL, this one also needs to be GPL. I asked the author to change the license
+if that ever happens this will immediately follow that and become MIT. 
+
+The firmware is taken from an MIT package.
 
 The code is licensed under the terms of the Gnu General Public
 License, Version 3. See the file `LICENSE` for details.

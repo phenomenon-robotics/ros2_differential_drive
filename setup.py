@@ -16,7 +16,7 @@ setup(
     py_modules=[],
     zip_safe=True,
     install_requires=['setuptools',
-                      'pyside'],
+                      'pyside2'],
     author='Jon Stephan',
     maintainer='Jon Stephan, Mark Rose',
     keywords=['ROS2'],
@@ -27,7 +27,7 @@ setup(
                             'pid_velocity = differential_drive.pid_velocity:main',
                             'twist_to_motors = differential_drive.twist_to_motors:main',
                             'virtual_joystick = differential_drive.virtual_joystick:main',
-                            'wheel_loopback = differential_drive.wheel_loopback:main'
+                            'wheel_loopback = differential_drive.wheel_loopback:main',
                             'wheel_scaler = differential_drive.wheel_scaler:main'
                             ],
     }
