@@ -41,20 +41,18 @@ class TwistToMotors(Node):
 
         self.rate = self.declare_parameter("rate", 50).value
         self.timeout_ticks = self.declare_parameter("timeout_ticks", 2).value
-        self.left = 0
-        self.right = 0
 
         self.create_timer(self.rate, self.calculate_left_and_right_target)
 
     def calculate_left_and_right_target(self):
         # dx = (l + r) / 2
         # dr = (r - l) / w
-        self.right = 1.0 * self.dx + self.dr * self.w / 2
-        self.left = 1.0 * self.dx - self.dr * self.w / 2
+        right = 1.0 * self.dx + self.dr * self.w / 2
+        left = 1.0 * self.dx - self.dr * self.w / 2
         # rospy.loginfo("publishing: (%d, %d)", left, right) 
 
-        self.pub_lmotor.publish(self.left)
-        self.pub_rmotor.publish(self.right)
+        self.pub_lmotor.publish(left)
+        self.pub_rmotor.publish(right)
 
         self.ticks_since_target += 1
 
