@@ -39,9 +39,9 @@ class TwistToMotors(Node):
         self.pub_rmotor = self.create_publisher(Float32, 'rwheel_vtarget', 10)
         self.create_subscription(Twist, 'twist', self.twist_callback, 10)
 
-        self.rate = self.declare_parameter("rate", 50).value        # seconds
+        self.rate_hz = self.declare_parameter("rate_hz", 50).value
 
-        self.create_timer(self.rate, self.calculate_left_and_right_target)
+        self.create_timer(1.0/self.rate_hz, self.calculate_left_and_right_target)
 
     def calculate_left_and_right_target(self):
         # dx = (l + r) / 2
