@@ -61,7 +61,6 @@ class TwistToMotors(Node):
         self.ticks_since_target = 0
         self.dx = msg.linear.x
         self.dr = msg.angular.z
-        self.dy = msg.linear.y
 
 
 def main(args=None):
