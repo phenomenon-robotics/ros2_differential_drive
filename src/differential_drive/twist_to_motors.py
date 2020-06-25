@@ -44,24 +44,11 @@ class TwistToMotors(Node):
         self.left = 0
         self.right = 0
 
-    def spin(self):
-        r = self.create_rate(self.rate)
-        idle = self.create_rate(10)
-        then = self.get_clock().now()
-        self.ticks_since_target = self.timeout_ticks
+        self.create_timer(self.rate, self.calculate_left_and_right_target)
 
-        ###### main loop  ######
-        while rclpy.ok():
-
-            while rclpy.ok() and self.ticks_since_target < self.timeout_ticks:
-                self.spin_once()
-                r.sleep()
-            idle.sleep()
-
-    def spin_once(self):
+    def calculate_left_and_right_target(self):
         # dx = (l + r) / 2
         # dr = (r - l) / w
-
         self.right = 1.0 * self.dx + self.dr * self.w / 2
         self.left = 1.0 * self.dx - self.dr * self.w / 2
         # rospy.loginfo("publishing: (%d, %d)", left, right) 
@@ -83,7 +70,7 @@ def main(args=None):
     rclpy.init(args=args)
     try:
         twist_to_motors = TwistToMotors()
-        twist_to_motors.spin()
+        rclpy.spin(twist_to_motors)
     except rclpy.exceptions.ROSInterruptException:
         pass
 
