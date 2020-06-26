@@ -39,35 +39,19 @@ class TwistToMotors(Node):
         self.pub_rmotor = self.create_publisher(Float32, 'rwheel_vtarget', 10)
         self.create_subscription(Twist, 'twist', self.twist_callback, 10)
 
-        self.rate = self.declare_parameter("rate", 50).value
-        self.timeout_ticks = self.declare_parameter("timeout_ticks", 2).value
-        self.left = 0
-        self.right = 0
+        self.rate_hz = self.declare_parameter("rate_hz", 50).value
 
-    def spin(self):
-        r = self.create_rate(self.rate)
-        idle = self.create_rate(10)
-        then = self.get_clock().now()
-        self.ticks_since_target = self.timeout_ticks
+        self.create_timer(1.0/self.rate_hz, self.calculate_left_and_right_target)
 
-        ###### main loop  ######
-        while rclpy.ok():
-
-            while rclpy.ok() and self.ticks_since_target < self.timeout_ticks:
-                self.spin_once()
-                r.sleep()
-            idle.sleep()
-
-    def spin_once(self):
+    def calculate_left_and_right_target(self):
         # dx = (l + r) / 2
         # dr = (r - l) / w
-
-        self.right = 1.0 * self.dx + self.dr * self.w / 2
-        self.left = 1.0 * self.dx - self.dr * self.w / 2
+        right = 1.0 * self.dx + self.dr * self.w / 2
+        left = 1.0 * self.dx - self.dr * self.w / 2
         # rospy.loginfo("publishing: (%d, %d)", left, right) 
 
-        self.pub_lmotor.publish(self.left)
-        self.pub_rmotor.publish(self.right)
+        self.pub_lmotor.publish(left)
+        self.pub_rmotor.publish(right)
 
         self.ticks_since_target += 1
 
@@ -76,14 +60,13 @@ class TwistToMotors(Node):
         self.ticks_since_target = 0
         self.dx = msg.linear.x
         self.dr = msg.angular.z
-        self.dy = msg.linear.y
 
 
 def main(args=None):
     rclpy.init(args=args)
     try:
         twist_to_motors = TwistToMotors()
-        twist_to_motors.spin()
+        rclpy.spin(twist_to_motors)
     except rclpy.exceptions.ROSInterruptException:
         pass
 
