@@ -53,7 +53,7 @@ from geometry_msgs.msg import Twist
 from geometry_msgs.msg import TransformStamped
 from nav_msgs.msg import Odometry
 from tf2_ros import TransformBroadcaster
-from std_msgs.msg import Int16
+from std_msgs.msg import Int32
 
 NS_TO_SEC= 1000000000
 
@@ -83,8 +83,8 @@ class DiffTf(Node):
         self.odom_frame_id = self.declare_parameter('odom_frame_id',
                                                     'odom').value  # the name of the odometry reference frame
 
-        self.encoder_min = self.declare_parameter('encoder_min', -32768).value
-        self.encoder_max = self.declare_parameter('encoder_max', 32768).value
+        self.encoder_min = self.declare_parameter('encoder_min', -65535).value
+        self.encoder_max = self.declare_parameter('encoder_max', 65535).value
         self.encoder_low_wrap = self.declare_parameter('wheel_low_wrap', (
                 self.encoder_max - self.encoder_min) * 0.3 + self.encoder_min).value
         self.encoder_high_wrap = self.declare_parameter('wheel_high_wrap', (
@@ -107,8 +107,8 @@ class DiffTf(Node):
         self.then = self.get_clock().now()
 
         # subscriptions
-        self.create_subscription(Int16, "lwheel", self.lwheel_callback, 10)
-        self.create_subscription(Int16, "rwheel", self.rwheel_callback, 10)
+        self.create_subscription(Int32, "lwheel", self.lwheel_callback, 10)
+        self.create_subscription(Int32, "rwheel", self.rwheel_callback, 10)
         self.odom_pub = self.create_publisher(Odometry, "odom", 10)
         self.odom_broadcaster = TransformBroadcaster(self)
 
