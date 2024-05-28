@@ -83,8 +83,8 @@ class DiffTf(Node):
         self.odom_frame_id = self.declare_parameter('odom_frame_id',
                                                     'odom').value  # the name of the odometry reference frame
 
-        self.encoder_min = self.declare_parameter('encoder_min', -65535).value
-        self.encoder_max = self.declare_parameter('encoder_max', 65535).value
+        self.encoder_min = self.declare_parameter('encoder_min', -4294967296).value
+        self.encoder_max = self.declare_parameter('encoder_max', 4294967296).value
         self.encoder_low_wrap = self.declare_parameter('wheel_low_wrap', (
                 self.encoder_max - self.encoder_min) * 0.3 + self.encoder_min).value
         self.encoder_high_wrap = self.declare_parameter('wheel_high_wrap', (
